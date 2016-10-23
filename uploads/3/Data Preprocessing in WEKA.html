@@ -1,0 +1,320 @@
+
+<!-- saved from url=(0072)http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Data Preprocessing in WEKA</title>
+</head>
+
+<body text="#000000" bgcolor="#000000" link="#0000FF" vlink="#0000B0" alink="#800080">
+
+<map name="header-589">
+<area shape="rect" coords="4,2,128,47" href="http://www.depaul.edu/" alt="DePaul University">
+<area shape="rect" coords="168,2,611,24" href="http://www.cs.depaul.edu/" alt="DePaul CTI Homepage">
+<area shape="rect" coords="188,26,593,48" href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/index.html">
+</map>
+
+<div align="center"><center>
+<table border="0" cellspacing="0" cellpadding="0">
+  <tbody><tr>
+    <td align="RIGHT" valign="TOP" width="620">
+	<img src="./Data Preprocessing in WEKA_files/header-589.gif" width="620" height="50" usemap="#header-589" border="0">
+	</td>
+  </tr>
+</tbody></table>
+</center></div>
+
+<div align="center"><center>
+
+<table width="620" cellpadding="10">
+  <tbody><tr valign="TOP">
+    <td bgcolor="#FFFFFF" valign="top">
+
+
+<br>
+<p align="center">
+<font face="Arial" size="5" color="#808000"><em><b>Data Preprocessing in WEKA</b></em></font>
+</p>
+
+<!-- ************************* START OF CONTENT *************************-->
+
+<table border="1" cellpadding="5"><tbody><tr><td>
+The following guide is based WEKA version 3.4.1 Additional resources on WEKA, including sample data sets
+can be found from the official <a href="http://www.cs.waikato.ac.nz/ml/weka/" target="_blank">WEKA Web site</a>.
+</td></tr></tbody></table>
+<p>
+
+This example illustrates some of the basic data preprocessing operations that can be
+performed using WEKA. The sample data set used for this example, unless otherwise indicated, is
+the "bank data" available in comma-separated format (<a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/data/bank-data.csv">bank-data.csv</a>).
+
+</p><p>The data contains the following fields</p>
+
+<center>
+<table border="1" cellpadding="3">
+  <tbody><tr>
+    <td><b>id</b></td>
+    <td>a unique identification number</td>
+  </tr>
+  <tr>
+    <td><b>age</b></td>
+    <td>age of customer in years (numeric)</td>
+  </tr>
+  <tr>
+    <td><b>sex</b></td>
+    <td>MALE / FEMALE</td>
+  </tr>
+  <tr>
+    <td><b>region</b></td>
+    <td>inner_city/rural/suburban/town</td>
+  </tr>
+  <tr>
+    <td><b>income</b></td>
+    <td>income of customer (numeric)</td>
+  </tr>
+  <tr>
+    <td><b>married</b></td>
+    <td>is the customer married (YES/NO)</td>
+  </tr>
+  <tr>
+    <td><b>children</b></td>
+    <td>number of children (numeric)</td>
+  </tr>
+  <tr>
+    <td><b>car</b></td>
+    <td>does the customer own a car (YES/NO)</td>
+  </tr>
+  <tr>
+    <td><b>save_acct</b></td>
+    <td>does the customer have a saving account (YES/NO)</td>
+  </tr>
+  <tr>
+    <td><b>current_acct</b></td>
+    <td>does the customer have a current account (YES/NO)</td>
+  </tr>
+  <tr>
+    <td><b>mortgage</b></td>
+    <td>does the customer have a mortgage (YES/NO)</td>
+  </tr>
+  <tr>
+    <td><b>pep</b></td>
+    <td>did the customer buy a PEP (Personal Equity Plan) after the last mailing (YES/NO)</td>
+  </tr>
+</tbody></table>
+</center>
+
+<h3>Loading the Data</h3>
+
+In addition to the native ARFF data file format, WEKA has the capability to read in ".csv" format
+files. This is fortunate since many databases or spreadsheet applications can save or export data
+into flat files in this format. As can be seen in the sample data file, the first row contains the
+attribute names (separated by commas) followed by each data row with attribute values listed in
+the same order (also separated by commas). In fact, once loaded into WEKA, the data set can be
+saved into ARFF format. If, however, you are interested in conveting a ".csv" file into WEKA's native
+ARFF using the commandline, this can be accomplished using the following command:
+<p>
+</p><center>
+<code>java weka.core.converters.CSVLoader filename.csv &gt; filename.arff</code>
+</center>
+<p>
+
+In this example, we load the data set into WEKA, perform a series of operations using WEKA's
+attribute and discretization filters, and then perform association rule mining on the resulting
+data set. While all of these operations can be performed from the command line, we use the GUI
+interface for WEKA Explorer.
+</p><p>
+
+Initially (in the Preprocess tab) click "open" and navigate to the directory containing the data
+file (.csv or .arff). In this case we will open the above data file. This is shown in Figure p1.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p1.gif" target="Figures">Figure p1</a></center>
+<p>
+
+Since the data is not in ARFF format, a dialog box will prompt you to use the convertor, as in Figure p2.
+You can click on "Use Covertor" button, and click OK in the next dialog box that appears (See Figure p3).
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p2.gif" target="Figures">Figure p2</a></center>
+<center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p3.gif" target="Figures">Figure p3</a></center>
+<p>
+
+Once the data is loaded, WEKA will recognize the attributes and during the scan of the data will
+compute some basic statistics on each attribute. The left panel in Figure p4 shows the list of
+recognized attributes, while the top panels indicate the names of the base relation (or table) and
+the current working relation (which are the same initially).
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p4.gif" target="Figures">Figure p4</a></center>
+<p>
+Clicking on any attribute in the left panel will show the basic statistics on that attribute. For
+categorical attributes, the frequency for each attribute value is shown, while for continuous
+attributes we can obtain min, max, mean, standard deviation, etc. As an example, see Figures p5 and 
+p6 below which show te results of selecting the "age" and "married" attributes, respectively.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p5.gif" target="Figures">Figure p5</a></center>
+<center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p6.gif" target="Figures">Figure p6</a></center>
+<p>
+
+Note that the visualization in the right bottom panel is a form of cross-tabulation across two attributes.
+For example, in Figure p6 above, the default visualization panel cross-tabulates "married" with the
+"pep" attribute (by default the second attribute is the last column of the data file). You can select
+another attribute using the drop down list.
+
+</p><h3>Selecting or Filtering Attributes</h3>
+
+In our sample data file, each record is uniquely identified by a customer id (the "id" attribute).
+We need to remove this attribute before the data mining step. We can do this by using the Attribute
+filters in WEKA. In the "Filter" panel, click on the "Choose" button. This will show a popup window 
+with a list available filters. Scroll down the list and select the 
+"weka.filters.unsupervised.attribute.Remove" filter as shown in Figure p7.
+<p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p7.gif" target="Figures">Figure p7</a></center>
+<p>
+Next, click on text box immediately to the right of the "Choose" buttom. In the resulting dialog 
+box enter the index of the attribute to be filtered out (this can be a
+range or a list separated by commas). In this case, we enter 1 which is the index of the "id"
+attribute (see the left panel). Make sure that the "invertSelection" option is set to false
+(otherwise everything except attribute 1 will be filtered). Then click "OK" (See Figure p8).
+Now, in the filter box you will see "Remove -R 1" (see Figure p9). 
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p8.gif" target="Figures">Figure p8</a></center>
+<center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p9.gif" target="Figures">Figure p9</a></center>
+<p>
+Click the "Apply" button to apply this filter
+to the data. This will remove the "id" attribute and create a new working relation (whose name
+now includes the details of the filter that was applied). The result is depicted in Figure p10:
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p10.gif" target="Figures">Figure p10</a></center>
+<p>
+It is possible now to apply additional filters to the new working
+relation. In this example, however, we will save our intermediate results as separate data files
+and treat each step as a separate WEKA session. To save the new working relation as an ARFF file,
+click on save button in the top panel. Here, as shown in the "save" dialog box (see Figure p11), we
+will save the new relation in the file "bank-data-R1.arff".
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p11.gif" target="Figures">Figure p11</a></center>
+<p>
+Figure p12 shows the top portion of the new generated ARFF file (in TextPad).
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p12.gif" target="Figures">Figure p12</a></center>
+<p>
+Note that in the new data set, the "id" attribute and all the corresponding values in the records
+have been removed. Also, note that Weka has automatically determined the correct types and values
+associated with the attributes, as listed in the Attributes section of the ARFF file.
+</p><p>
+
+</p><h3>Discretization</h3>
+
+Some techniques, such as association rule mining, can only be performed on categorical data. This
+requires performing discretization on numeric or continuous attributes. There are 3 such
+attributes in this data set: "age", "income", and "children". In the case of the "children"
+attribute the range of possible values are only 0, 1, 2, and 3. In this case, we have opted for
+keeping all of these values in the data. This means we can simply discretize by removing the
+keyword "numeric" as the type for the "children" attribute in the ARFF file, and replacing it 
+with the set of discrete values values. We do this directly in our text editor as seen in Figure p13.
+In this case, we have saved the resulting relation in a separate file "bank-data2.arff".
+<p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p13.gif" target="Figures">Figure p13</a></center>
+<p>
+We will rely on WEKA to perform discretization on the "age" and "income" attributes. In this
+example, we divide each of these into 3 bins (intervals). The WEKA discretization filter, can
+divide the ranges blindly, or used various statistical techniques to automatically determine the
+best way of partitioning the data. In this case, we will perform simple binning.
+</p><p>
+First we will load our filtered data set into WEKA by opening the file "bank-data2.arff". The
+"open" dialog box in depicted in Figure p14.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p14.gif" target="Figures">Figure p14</a></center>
+<p>
+
+If we select the "children" attribute in this new data set, we see that it is now a categorical
+attribute with four possible discrete values. This is depicted in Figure p15.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p15.gif" target="Figures">Figure p15</a></center>
+<p>
+
+Now, once again we activate the Filter dialog box, but this time, we will select
+"weka.filters.unsupervised.attribute.Discretize" from the list (see Figure p16).
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p16.gif" target="Figures">Figure p16</a></center>
+<p>
+Next, to change the defaults for this filter, click on the box immediately to the right of the
+"Choose" button. This will open the Discretize Filter dialog box. We enter the index for the
+the attributes to be discretized. In this case we enter 1 corresponding to attribute "age". 
+We also enter 3 as the number of bins (note that it is possible to discretize more than one
+attribute at the same time (by using a list of attribute indeces). Since we are doing simple 
+binning, all of the other available options are set to "false". The dialog box is depicted in Figure p17.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p17.gif" target="Figures">Figure p17</a></center>
+<p>
+Click "Apply" in the Filter panel. This will result in a new working relation with the  
+selected attribute partitioned into 3 bins (see Figure p18). To examine the
+results, we save the new working relation in the file "bank-data3.arff" as depicted in Figure p19.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p18.gif" target="Figures">Figure p18</a></center>
+<center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p19.gif" target="Figures">Figure p19</a></center>
+<p>
+
+Let us now examine the new data set using our text editor (in this case, TextPad). The top portion
+of the data is shown in Figure p19. You can observe that WEKA has assigned its own labels to each
+of the value ranges for the discretized attribute. For example, the lower range in the "age"
+attribute is labeled "(-inf-34.333333]" (enclosed in single quotes and escape characters), while
+the middle range is labeled "(34.333333-50.666667]", and so on. These labels now also appear in
+the data records where the original age value was in the corresponding range.
+</p><p>
+Next, we apply the same process to discretize the "income" attribute into 3 bins. Again, Weka
+automatically performs the binning and replaces the values in the "income" column with the
+appropriate automatically generated labels. We save the new file into "bank-data3.arff", replacing the
+older version.
+</p><p>
+Clearly, the WEKA labels, while readable, leave much to be desired as far as naming conventions
+go. We will thus use the global search/replace functions in TextPad to replace these labels with
+more succinct and readable ones. Fortunately, TextPad has a powerful regular expression pattern
+matching capability which allows us to do this efficiently. Figure p20 shows the TextPad 
+search/replace dialog box for replacing the age label "(-inf-34.333333]" with the label "0_34". 
+Note that the "regular expression" option is selected. In the "Find what" box we have entered 
+the full label '\'(-inf-34.333333]\'' (including the back-slashes and single quotes). Furthermore, 
+back-slashes are escaped with another back-slash so that in the regular expression patterns 
+matching they are treated as literals (resulting in: '\\'(-inf-34.333333]\\''. In the "Replace 
+with" box we enter "0_34".
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p19.gif" target="Figures">Figure p20</a></center>
+<p>
+Now we click on the "Replace All" button to replace all instances of the old patterns with the new
+one. The result of this operation is depicted in Figure p21.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p21.gif" target="Figures">Figure p21</a></center>
+<p>
+Note that the new label now appears in place of the old one both in the attribute section of the
+ARFF file as well as in the relevant data records. We repeat this manual re-labeling process with
+all of the WEKA-assigned labels for the "age" and the "income" attributes. Figure p22 shows the
+final result of the transformation and the newly assigned labels for these attribute values.
+</p><p>
+</p><center><a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/preprocess/p22.gif" target="Figures">Figure p22</a></center>
+<p>
+We now also change the relation name in the ARFF file to "bank-data-final" and save the file as 
+"<a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/data/bank-data-final.arff" target="_blank">bank-data-final.arff</a>".
+</p><p>
+
+</p><hr>
+<table cellpadding="5&quot;"><tbody><tr>
+<td width="50" align="right"><img src="./Data Preprocessing in WEKA_files/icon.gif" width="58" height="43"></td>
+<td>
+<a href="http://facweb.cs.depaul.edu/mobasher/classes/ect584/WEKA/index.html"><b>Return to Main Page</b></a>
+</td>
+</tr></tbody></table>
+
+<!-- ************************** END OF CONTENT **************************-->
+
+    <p align="center"><br>
+    </p></td>
+  </tr>
+  <tr align="center">
+    <td colspan="2"><hr size="2" align="center">
+    <font size="-1" color="white">Copyright © 2005-2006, <i><a href="mailto:mobasher@cs.depaul.edu"><font color="#8eb9ff">Bamshad Mobasher</font></a></i>,
+    School of CTI, DePaul University.</font> </td>
+  </tr>
+</tbody></table>
+</center></div>
+
+
+
+
+
+</body></html>
